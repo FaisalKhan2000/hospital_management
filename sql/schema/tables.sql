@@ -19,6 +19,13 @@ CREATE DATABASE IF NOT EXISTS hospital;
 
 USE hospital;
 
+-- Specializations table
+CREATE TABLE IF NOT EXISTS specializations (
+    specialization_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT
+);
+
 -- Patients table
 CREATE TABLE IF NOT EXISTS patients (
     patient_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,20 +34,21 @@ CREATE TABLE IF NOT EXISTS patients (
     date_of_birth DATE NOT NULL,
     gender ENUM('Male', 'Female', 'Other') NOT NULL,
     email VARCHAR(100),
-    phone VARCHAR(20),
+    phone_number VARCHAR(20),
     address TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Doctors table (fixed spelling from "Docters")
+-- Doctors table
 CREATE TABLE IF NOT EXISTS doctors (
     doctor_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    specialization VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone VARCHAR(20) NOT NULL,
+    specialization_id INT NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    status ENUM('Active', 'On Leave', 'Inactive') DEFAULT 'Active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -51,12 +59,23 @@ CREATE TABLE IF NOT EXISTS appointments (
     patient_id INT NOT NULL,
     doctor_id INT NOT NULL,
     appointment_date DATETIME NOT NULL,
-    status ENUM('Scheduled', 'Completed', 'Cancelled') DEFAULT 'Scheduled',
+    status ENUM('Scheduled', 'Completed', 'Cancelled', 'No-Show') DEFAULT 'Scheduled',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE RESTRICT,
-    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE RESTRICT
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Medical records table
+CREATE TABLE IF NOT EXISTS medical_records (
+    record_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    doctor_id INT NOT NULL,
+    record_date DATETIME NOT NULL,
+    diagnosis TEXT,
+    treatment TEXT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 
